@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Service } from "@/types";
 import ServiceForm from "@/components/ServiceForm";
 import DeleteModal from "@/components/DeleteModal";
@@ -89,9 +90,12 @@ export default function ServicesPage() {
                 return (
                   <div
                     key={service.id}
-                    className="bg-gray-900 border border-gray-800 rounded-xl p-4 flex items-center justify-between"
+                    className="bg-gray-900 border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-gray-700 transition-all"
                   >
-                    <div className="flex items-center gap-4 min-w-0">
+                    <Link
+                      href={`/services/${service.id}`}
+                      className="flex items-center gap-4 min-w-0 flex-1"
+                    >
                       <div
                         className={`w-2.5 h-2.5 rounded-full shrink-0 ${
                           !hasCheck
@@ -109,7 +113,7 @@ export default function ServicesPage() {
                           {service.url}
                         </p>
                       </div>
-                    </div>
+                    </Link>
 
                     <div className="flex items-center gap-4 shrink-0 ml-4">
                       <div className="hidden sm:flex flex-col items-end text-sm">

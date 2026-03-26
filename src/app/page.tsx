@@ -23,7 +23,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchServices();
-    const interval = setInterval(fetchServices, 30000);
+    const interval = setInterval(fetchServices, 15000);
     return () => clearInterval(interval);
   }, []);
 
