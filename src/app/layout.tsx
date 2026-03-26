@@ -6,6 +6,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "PixelNova - Network Monitor",
   description: "Dashboard de monitoring reseau en temps reel",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({

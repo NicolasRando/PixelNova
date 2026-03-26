@@ -2,6 +2,24 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { checkService } from "@/lib/monitor";
 
+// Garde uniquement les 10 derniers checks "up" par service, ne supprime jamais les "down"
+async function cleanupOldChecks(serviceId: string) {
+  // Recupere les checks "up" tries du plus recent au plus ancien
+  const upChecks = await prisma.check.findMany({
+    where: { serviceId, status: "up" },
+    orderBy: { checkedAt: "desc" },
+    select: { id: true },
+  });
+
+  // Si plus de 10 checks "up", on supprime les plus anciens
+  if (upChecks.length > 10) {
+    const toDelete = upChecks.slice(10).map((c) => c.id);
+    await prisma.check.deleteMany({
+      where: { id: { in: toDelete } },
+    });
+  }
+}
+
 // POST /api/monitor — Verifie tous les services dont le check est expire
 export async function POST() {
   try {
@@ -30,6 +48,9 @@ export async function POST() {
         try {
           const check = await checkService(service.id);
           results.push({ serviceId: service.id, name: service.name, check });
+
+          // Nettoyer les anciens checks "up" apres chaque nouveau check
+          await cleanupOldChecks(service.id);
         } catch {
           results.push({ serviceId: service.id, name: service.name, error: true });
         }

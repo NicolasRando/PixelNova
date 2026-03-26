@@ -8,15 +8,25 @@ const globalForPrisma = globalThis as unknown as {
   dbInitialized: boolean;
 };
 
-function getDbUrl() {
+function getDbConfig() {
+  // Production : Turso cloud
+  if (process.env.TURSO_DATABASE_URL && process.env.TURSO_AUTH_TOKEN) {
+    return {
+      url: process.env.TURSO_DATABASE_URL,
+      authToken: process.env.TURSO_AUTH_TOKEN,
+    };
+  }
+
+  // Local : SQLite fichier
   const dbPath = path.join(process.cwd(), "prisma", "dev.db").replaceAll("\\", "/");
-  return `file:${dbPath}`;
+  return { url: `file:${dbPath}` };
 }
 
-async function ensureTables(url: string) {
+async function ensureTables() {
   if (globalForPrisma.dbInitialized) return;
 
-  const client = createClient({ url });
+  const config = getDbConfig();
+  const client = createClient(config);
 
   await client.execute(`CREATE TABLE IF NOT EXISTS "Service" (
     "id" TEXT NOT NULL PRIMARY KEY,
@@ -41,14 +51,14 @@ async function ensureTables(url: string) {
 }
 
 function createPrismaClient() {
-  const url = getDbUrl();
-  const adapter = new PrismaLibSql({ url });
+  const config = getDbConfig();
+  const adapter = new PrismaLibSql(config);
   return new PrismaClient({ adapter });
 }
 
 export const prisma = globalForPrisma.prisma || createPrismaClient();
 
 // Ensure tables exist on first import
-ensureTables(getDbUrl());
+ensureTables();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

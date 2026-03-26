@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import StatusCard from "@/components/StatusCard";
+import AlertBanner from "@/components/AlertBanner";
 import { Service } from "@/types";
 
 export default function DashboardPage() {
@@ -76,6 +77,8 @@ export default function DashboardPage() {
 
   return (
     <div>
+      <AlertBanner services={services} />
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>

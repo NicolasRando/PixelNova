@@ -2,10 +2,35 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import Logo from "./Logo";
+import { Service } from "@/types";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [downCount, setDownCount] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    async function fetchStatus() {
+      try {
+        const res = await fetch("/api/services");
+        const data: Service[] = await res.json();
+        setDownCount(data.filter((s) => s.lastCheck?.status === "down").length);
+      } catch {
+        // Silently fail
+      }
+    }
+
+    fetchStatus();
+    const interval = setInterval(fetchStatus, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Fermer le menu quand on change de page
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
 
   const links = [
     { href: "/", label: "Dashboard" },
@@ -23,7 +48,8 @@ export default function Navbar() {
             </span>
           </Link>
 
-          <div className="flex items-center gap-1">
+          {/* Desktop links */}
+          <div className="hidden sm:flex items-center gap-1">
             {links.map((link) => {
               const isActive = link.href === "/"
                 ? pathname === "/"
@@ -33,18 +59,72 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     isActive
                       ? "bg-indigo-500/20 text-indigo-400"
                       : "text-gray-400 hover:text-white hover:bg-gray-800"
                   }`}
                 >
                   {link.label}
+                  {link.href === "/" && downCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[11px] font-bold text-white flex items-center justify-center animate-pulse">
+                      {downCount}
+                    </span>
+                  )}
                 </Link>
               );
             })}
           </div>
+
+          {/* Mobile burger */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="sm:hidden relative p-2 text-gray-400 hover:text-white"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {menuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+            {downCount > 0 && (
+              <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center animate-pulse">
+                {downCount}
+              </span>
+            )}
+          </button>
         </div>
+
+        {/* Mobile menu */}
+        {menuOpen && (
+          <div className="sm:hidden pb-4 border-t border-gray-800 mt-2 pt-3 space-y-1">
+            {links.map((link) => {
+              const isActive = link.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(link.href);
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-indigo-500/20 text-indigo-400"
+                      : "text-gray-400 hover:text-white hover:bg-gray-800"
+                  }`}
+                >
+                  {link.label}
+                  {link.href === "/" && downCount > 0 && (
+                    <span className="ml-2 inline-flex items-center justify-center w-5 h-5 bg-red-500 rounded-full text-[11px] font-bold text-white">
+                      {downCount}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
     </nav>
   );
