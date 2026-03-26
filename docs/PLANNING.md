@@ -7,7 +7,7 @@
 | Jour | Objectif | Statut |
 |------|----------|--------|
 | J1 | Setup + Backend | Termine |
-| J2 | Frontend | En attente |
+| J2 | Frontend | Termine |
 | J3 | Polish + Deploy | En attente |
 
 ---
@@ -42,15 +42,15 @@
 ## Jour 2 - Frontend
 
 ### Matin
-- [ ] Creer le layout principal (Navbar, structure des pages)
-- [ ] Page Dashboard : compteurs UP/DOWN, cartes de statut
-- [ ] Composant StatusCard
+- [x] Creer le layout principal (Navbar, structure des pages)
+- [x] Page Dashboard : compteurs UP/DOWN, cartes de statut
+- [x] Composant StatusCard
 
 ### Apres-midi
-- [ ] Page Gestion des services : formulaire + liste
-- [ ] Page Detail d'un service : graphiques Chart.js, historique
-- [ ] Composant LatencyChart (courbe de latence)
-- [ ] Connecter le frontend aux API routes
+- [x] Page Gestion des services : formulaire + liste
+- [x] Page Detail d'un service : graphiques Chart.js, historique
+- [x] Composant LatencyChart (courbe de latence)
+- [x] Connecter le frontend aux API routes
 
 ### Livrable J2
 > Interface complete et fonctionnelle, navigation entre les pages
@@ -79,4 +79,5 @@
 
 - **Prisma v7 + libSQL** : Prisma v7 necessite un adapter (plus de driver natif SQLite). On utilise `@prisma/adapter-libsql` + `@libsql/client`. Les tables sont creees via libSQL au demarrage car `prisma migrate` natif et libSQL ne partagent pas le meme format de fichier.
 - **Tous les endpoints API testes et valides** : CRUD complet, validation, check HTTP avec mesure de latence, gestion des erreurs (timeout, DNS, etc.).
+- **Frontend complet** : Navbar sticky, Dashboard avec compteurs et StatusCard, page Services avec formulaire CRUD + modal suppression, page Detail avec graphique Chart.js et tableau historique. Auto-refresh 30s, loading states, empty states.
 
