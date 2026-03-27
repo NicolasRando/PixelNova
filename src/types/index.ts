@@ -21,3 +21,9 @@ export interface ChecksResponse {
   checks: Check[];
   total: number;
 }
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}

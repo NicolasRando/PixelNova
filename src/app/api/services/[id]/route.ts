@@ -1,14 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getAuthSession, unauthorized } from "@/lib/session";
 
 type Params = { params: Promise<{ id: string }> };
 
 // GET /api/services/:id — Detail d'un service
 export async function GET(_request: NextRequest, { params }: Params) {
+  const session = await getAuthSession();
+  if (!session) return unauthorized();
+
   const { id } = await params;
 
   const service = await prisma.service.findUnique({
-    where: { id },
+    where: { id, userId: session.user.id },
     include: {
       checks: {
         orderBy: { checkedAt: "desc" },
@@ -33,9 +37,12 @@ export async function GET(_request: NextRequest, { params }: Params) {
 
 // PUT /api/services/:id — Modifie un service
 export async function PUT(request: NextRequest, { params }: Params) {
+  const session = await getAuthSession();
+  if (!session) return unauthorized();
+
   const { id } = await params;
 
-  const existing = await prisma.service.findUnique({ where: { id } });
+  const existing = await prisma.service.findUnique({ where: { id, userId: session.user.id } });
   if (!existing) {
     return NextResponse.json(
       { error: "Service non trouve" },
@@ -102,9 +109,12 @@ export async function PUT(request: NextRequest, { params }: Params) {
 
 // DELETE /api/services/:id — Supprime un service et ses checks
 export async function DELETE(_request: NextRequest, { params }: Params) {
+  const session = await getAuthSession();
+  if (!session) return unauthorized();
+
   const { id } = await params;
 
-  const existing = await prisma.service.findUnique({ where: { id } });
+  const existing = await prisma.service.findUnique({ where: { id, userId: session.user.id } });
   if (!existing) {
     return NextResponse.json(
       { error: "Service non trouve" },

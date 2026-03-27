@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { checkService } from "@/lib/monitor";
+import { getAuthSession, unauthorized } from "@/lib/session";
 
-// GET /api/services — Liste tous les services avec leur dernier check
+// GET /api/services — Liste tous les services de l'utilisateur connecte
 export async function GET() {
+  const session = await getAuthSession();
+  if (!session) return unauthorized();
+
   const services = await prisma.service.findMany({
+    where: { userId: session.user.id },
     include: {
       checks: {
         orderBy: { checkedAt: "desc" },
@@ -25,6 +30,9 @@ export async function GET() {
 
 // POST /api/services — Cree un nouveau service
 export async function POST(request: NextRequest) {
+  const session = await getAuthSession();
+  if (!session) return unauthorized();
+
   try {
     const body = await request.json();
     const { name, url, interval } = body;
@@ -71,6 +79,7 @@ export async function POST(request: NextRequest) {
         name: name.trim(),
         url: url.trim(),
         interval,
+        userId: session.user.id,
       },
     });
 

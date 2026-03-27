@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getAuthSession, unauthorized } from "@/lib/session";
 
 type Params = { params: Promise<{ id: string }> };
 
 // GET /api/services/:id/checks — Historique des checks
 export async function GET(request: NextRequest, { params }: Params) {
+  const session = await getAuthSession();
+  if (!session) return unauthorized();
+
   const { id } = await params;
 
-  const service = await prisma.service.findUnique({ where: { id } });
+  const service = await prisma.service.findUnique({ where: { id, userId: session.user.id } });
   if (!service) {
     return NextResponse.json(
       { error: "Service non trouve" },

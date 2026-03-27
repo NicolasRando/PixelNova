@@ -13,6 +13,7 @@ export default function DashboardPage() {
   async function fetchServices() {
     try {
       const res = await fetch("/api/services");
+      if (!res.ok) return;
       const data = await res.json();
       setServices(data);
     } catch (err) {

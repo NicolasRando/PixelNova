@@ -3,18 +3,23 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSession, signOut } from "next-auth/react";
 import Logo from "./Logo";
 import { Service } from "@/types";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [downCount, setDownCount] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
+    if (!session) return;
+
     async function fetchStatus() {
       try {
         const res = await fetch("/api/services");
+        if (!res.ok) return;
         const data: Service[] = await res.json();
         setDownCount(data.filter((s) => s.lastCheck?.status === "down").length);
       } catch {
@@ -25,7 +30,7 @@ export default function Navbar() {
     fetchStatus();
     const interval = setInterval(fetchStatus, 15000);
     return () => clearInterval(interval);
-  }, []);
+  }, [session]);
 
   // Fermer le menu quand on change de page
   useEffect(() => {
@@ -50,30 +55,48 @@ export default function Navbar() {
 
           {/* Desktop links */}
           <div className="hidden sm:flex items-center gap-1">
-            {links.map((link) => {
-              const isActive = link.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(link.href);
+            {session ? (
+              <>
+                {links.map((link) => {
+                  const isActive = link.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(link.href);
 
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-indigo-500/20 text-indigo-400"
-                      : "text-gray-400 hover:text-white hover:bg-gray-800"
-                  }`}
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        isActive
+                          ? "bg-indigo-500/20 text-indigo-400"
+                          : "text-gray-400 hover:text-white hover:bg-gray-800"
+                      }`}
+                    >
+                      {link.label}
+                      {link.href === "/" && downCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[11px] font-bold text-white flex items-center justify-center animate-pulse">
+                          {downCount}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+                <span className="text-sm text-gray-400 ml-4">{session.user.name}</span>
+                <button
+                  onClick={() => signOut()}
+                  className="ml-2 px-3 py-1.5 text-sm text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
                 >
-                  {link.label}
-                  {link.href === "/" && downCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[11px] font-bold text-white flex items-center justify-center animate-pulse">
-                      {downCount}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
+                  Deconnexion
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                Connexion
+              </Link>
+            )}
           </div>
 
           {/* Mobile burger */}
@@ -99,30 +122,50 @@ export default function Navbar() {
         {/* Mobile menu */}
         {menuOpen && (
           <div className="sm:hidden pb-4 border-t border-gray-800 mt-2 pt-3 space-y-1">
-            {links.map((link) => {
-              const isActive = link.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(link.href);
+            {session ? (
+              <>
+                {links.map((link) => {
+                  const isActive = link.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(link.href);
 
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-indigo-500/20 text-indigo-400"
-                      : "text-gray-400 hover:text-white hover:bg-gray-800"
-                  }`}
-                >
-                  {link.label}
-                  {link.href === "/" && downCount > 0 && (
-                    <span className="ml-2 inline-flex items-center justify-center w-5 h-5 bg-red-500 rounded-full text-[11px] font-bold text-white">
-                      {downCount}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        isActive
+                          ? "bg-indigo-500/20 text-indigo-400"
+                          : "text-gray-400 hover:text-white hover:bg-gray-800"
+                      }`}
+                    >
+                      {link.label}
+                      {link.href === "/" && downCount > 0 && (
+                        <span className="ml-2 inline-flex items-center justify-center w-5 h-5 bg-red-500 rounded-full text-[11px] font-bold text-white">
+                          {downCount}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+                <div className="border-t border-gray-800 mt-2 pt-2">
+                  <span className="block px-4 py-2 text-sm text-gray-400">{session.user.name}</span>
+                  <button
+                    onClick={() => signOut()}
+                    className="block w-full text-left px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+                  >
+                    Deconnexion
+                  </button>
+                </div>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                className="block px-4 py-2.5 text-sm font-medium text-indigo-400 hover:text-indigo-300"
+              >
+                Connexion
+              </Link>
+            )}
           </div>
         )}
       </div>
