@@ -5,7 +5,7 @@
 ## Base URL
 
 - Local : `http://localhost:3000/api`
-- Production : `https://pixelnova.vercel.app/api`
+- Production : `https://pixel-nova-sigma.vercel.app/api`
 
 ---
 
@@ -154,6 +154,31 @@ Declenche un check manuel immediatement.
 | 400 | Requete invalide (validation) |
 | 404 | Ressource non trouvee |
 | 500 | Erreur serveur interne |
+
+---
+
+## Monitoring
+
+### POST /api/monitor
+
+Verifie automatiquement tous les services dont le dernier check depasse l'intervalle configure. Appele toutes les 30s par le MonitorWorker.
+
+- **Auth** : Aucune
+- **Body** : Aucun
+- **Logique** :
+  - Parcourt tous les services
+  - Si le dernier check est plus ancien que l'intervalle, lance un nouveau check
+  - Apres chaque check, nettoie les anciens checks UP (garde les 10 derniers)
+  - Les checks DOWN ne sont jamais supprimes
+- **Reponse 200** :
+```json
+{
+  "checked": 3,
+  "results": [
+    { "service": "Google", "status": "up", "latency": 45 }
+  ]
+}
+```
 
 ---
 

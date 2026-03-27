@@ -5,11 +5,12 @@
 ## ORM : Prisma
 
 - Fichier de configuration : `prisma/schema.prisma`
-- Base de donnees : SQLite (fichier `prisma/dev.db`)
+- Base de donnees locale : SQLite (fichier `prisma/dev.db`) via libSQL
+- Base de donnees production : Turso (cloud libSQL) — `libsql://pixelnova-nicolasrando.aws-eu-west-1.turso.io`
+- Adapter : `@prisma/adapter-libsql` (Prisma v7 ne supporte plus le driver SQLite natif)
 - Commandes utiles :
-  - `npx prisma migrate dev` : Appliquer les migrations
-  - `npx prisma studio` : Interface visuelle pour la BDD
   - `npx prisma generate` : Regenerer le client Prisma
+  - Les tables sont creees automatiquement au demarrage via `ensureTables()` dans `db.ts`
 
 ---
 

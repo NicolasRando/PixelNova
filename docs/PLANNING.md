@@ -8,7 +8,7 @@
 |------|----------|--------|
 | J1 | Setup + Backend | Termine |
 | J2 | Frontend | Termine |
-| J3 | Polish + Deploy | En attente |
+| J3 | Polish + Deploy | Termine |
 
 ---
 
@@ -60,15 +60,17 @@
 ## Jour 3 - Polish + Deploy
 
 ### Matin
-- [ ] Systeme d'alertes (detection UP/DOWN, bandeau, badge)
-- [ ] Responsive design (mobile, tablette, desktop)
-- [ ] Loading states et empty states
+- [x] Systeme d'alertes (AlertBanner DOWN, badge rouge Navbar)
+- [x] Responsive design (mobile burger menu, tablette, desktop)
+- [x] Loading states et empty states
+- [x] Retention intelligente (10 derniers UP, tous les DOWN conserves)
 
 ### Apres-midi
-- [ ] Finitions (favicon, page 404, animations)
-- [ ] Rediger le README.md
-- [ ] Deployer sur Vercel
-- [ ] Tests finaux sur l'URL de production
+- [x] Finitions (favicon SVG, page 404 custom, animations glow)
+- [x] Rediger le README.md complet
+- [x] Migration base de donnees vers Turso (cloud libSQL)
+- [x] Deployer sur Vercel
+- [x] Tests finaux sur l'URL de production
 
 ### Livrable J3
 > Application deployee, accessible en ligne, README complet
@@ -80,4 +82,7 @@
 - **Prisma v7 + libSQL** : Prisma v7 necessite un adapter (plus de driver natif SQLite). On utilise `@prisma/adapter-libsql` + `@libsql/client`. Les tables sont creees via libSQL au demarrage car `prisma migrate` natif et libSQL ne partagent pas le meme format de fichier.
 - **Tous les endpoints API testes et valides** : CRUD complet, validation, check HTTP avec mesure de latence, gestion des erreurs (timeout, DNS, etc.).
 - **Frontend complet** : Navbar sticky, Dashboard avec compteurs et StatusCard, page Services avec formulaire CRUD + modal suppression, page Detail avec graphique Chart.js et tableau historique. Auto-refresh 30s, loading states, empty states.
+- **Monitoring automatique** : MonitorWorker en layout qui appelle `/api/monitor` toutes les 30s. Retention : 10 derniers checks UP conserves, tous les DOWN conserves.
+- **Turso (cloud libSQL)** : Migration de SQLite local vers Turso pour deploiement Vercel (serverless). `db.ts` detecte automatiquement l'environnement (local vs cloud).
+- **Deploiement Vercel** : https://pixel-nova-sigma.vercel.app — build OK, variables d'environnement TURSO_DATABASE_URL et TURSO_AUTH_TOKEN configurees.
 
