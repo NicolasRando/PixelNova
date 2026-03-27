@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { checkService } from "@/lib/monitor";
+import { getAuthSession } from "@/lib/session";
 
 // Garde uniquement les 10 derniers checks "up" par service, ne supprime jamais les "down"
 async function cleanupOldChecks(serviceId: string) {
@@ -20,10 +21,16 @@ async function cleanupOldChecks(serviceId: string) {
   }
 }
 
-// POST /api/monitor — Verifie tous les services dont le check est expire
+// POST /api/monitor — Verifie les services de l'utilisateur connecte
 export async function POST() {
+  const session = await getAuthSession();
+  if (!session) {
+    return NextResponse.json({ error: "Non autorise" }, { status: 401 });
+  }
+
   try {
     const services = await prisma.service.findMany({
+      where: { userId: session.user.id },
       include: {
         checks: {
           orderBy: { checkedAt: "desc" },

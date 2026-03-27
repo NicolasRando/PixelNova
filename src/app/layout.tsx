@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import SessionProvider from "@/components/SessionProvider";
+import MonitorWorker from "@/components/MonitorWorker";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,6 +22,7 @@ export default function RootLayout({
       <body className="bg-gray-950 text-gray-100 min-h-screen">
         <SessionProvider>
           <Navbar />
+          <MonitorWorker />
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {children}
           </main>

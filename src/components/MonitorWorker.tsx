@@ -1,25 +1,26 @@
 "use client";
 
 import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 export default function MonitorWorker() {
+  const { data: session } = useSession();
+
   useEffect(() => {
+    if (!session) return;
+
     async function runMonitor() {
       try {
         await fetch("/api/monitor", { method: "POST" });
       } catch {
-        // Silently fail — will retry next cycle
+        // Silently fail
       }
     }
 
-    // Premier check immediat
     runMonitor();
-
-    // Puis toutes les 30 secondes
-    const interval = setInterval(runMonitor, 30000);
-
+    const interval = setInterval(runMonitor, 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [session]);
 
   return null;
 }
