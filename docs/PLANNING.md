@@ -77,6 +77,55 @@
 
 ---
 
+## V2 - Authentification, Cron, Dark Mode, Tests, CI/CD
+
+### Vue d'ensemble V2
+
+| Jour | Objectif | Statut |
+|------|----------|--------|
+| J4 | Auth + Cron Vercel | En attente |
+| J5 | Dark mode + Tests + CI/CD | En attente |
+
+---
+
+## Jour 4 - Auth + Cron Vercel
+
+### Matin
+- [ ] NextAuth.js setup (provider credentials)
+- [ ] Creer la table User dans le schema Prisma
+- [ ] Pages login et register
+- [ ] Protection des routes API (auth requise)
+- [ ] Middleware auth (redirection si non connecte)
+
+### Apres-midi
+- [ ] Cron Vercel (configuration vercel.json)
+- [ ] Supprimer le MonitorWorker (remplace par cron serverless)
+- [ ] Endpoint /api/cron/monitor securise avec CRON_SECRET
+- [ ] Tests de fiabilite monitoring 24/7
+
+### Livrable J4
+> Authentification complete, monitoring serverless autonome
+
+---
+
+## Jour 5 - Dark Mode + Tests + CI/CD
+
+### Matin
+- [ ] Dark mode : ThemeProvider, toggle dans la navbar
+- [ ] Tailwind dark: classes sur tous les composants
+- [ ] Persistance du theme dans localStorage
+- [ ] Adapter tous les composants existants au dark mode
+
+### Apres-midi
+- [ ] Tests unitaires avec Vitest (logique metier + API routes)
+- [ ] Tests E2E avec Playwright (parcours utilisateur complets)
+- [ ] CI/CD GitHub Actions (lint, tests, deploy auto sur Vercel)
+
+### Livrable J5
+> App professionnelle avec auth, dark mode, tests, CI/CD
+
+---
+
 ## Notes et decisions en cours de route
 
 - **Prisma v7 + libSQL** : Prisma v7 necessite un adapter (plus de driver natif SQLite). On utilise `@prisma/adapter-libsql` + `@libsql/client`. Les tables sont creees via libSQL au demarrage car `prisma migrate` natif et libSQL ne partagent pas le meme format de fichier.

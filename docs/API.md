@@ -9,13 +9,83 @@
 
 ---
 
+## Authentification (V2)
+
+> Tous les endpoints ci-dessous sont geres par NextAuth.js.
+
+### POST /api/auth/register
+
+Cree un nouveau compte utilisateur.
+
+- **Auth** : Aucune
+- **Body** :
+```json
+{
+  "name": "Nicolas",
+  "email": "nicolas@example.com",
+  "password": "motdepasse123"
+}
+```
+- **Reponse 201** : Utilisateur cree
+- **Reponse 400** : Email deja utilise ou validation echouee
+
+---
+
+### POST /api/auth/login
+
+Authentifie un utilisateur (via NextAuth.js credentials provider).
+
+- **Auth** : Aucune
+- **Body** :
+```json
+{
+  "email": "nicolas@example.com",
+  "password": "motdepasse123"
+}
+```
+- **Reponse 200** : Session creee (cookie JWT)
+- **Reponse 401** : Identifiants invalides
+
+---
+
+### POST /api/auth/logout
+
+Deconnecte l'utilisateur et supprime la session.
+
+- **Auth** : Session active
+- **Reponse 200** : Session supprimee
+
+---
+
+### GET /api/auth/session
+
+Retourne les informations de la session courante.
+
+- **Auth** : Aucune (retourne null si pas de session)
+- **Reponse 200** :
+```json
+{
+  "user": {
+    "id": "clx1234...",
+    "name": "Nicolas",
+    "email": "nicolas@example.com"
+  }
+}
+```
+
+---
+
+> **Note V2** : Toutes les routes `/api/services` et `/api/services/:id/*` sont desormais protegees par le middleware auth. Les requetes sans session valide recoivent une reponse 401 Unauthorized.
+
+---
+
 ## Services
 
 ### GET /api/services
 
 Liste tous les services avec leur dernier check.
 
-- **Auth** : Aucune
+- **Auth** : Auth requise
 - **Params** : Aucun
 - **Reponse 200** :
 ```json
@@ -41,7 +111,7 @@ Liste tous les services avec leur dernier check.
 
 Cree un nouveau service et lance un premier check.
 
-- **Auth** : Aucune
+- **Auth** : Auth requise
 - **Body** :
 ```json
 {
@@ -159,11 +229,11 @@ Declenche un check manuel immediatement.
 
 ## Monitoring
 
-### POST /api/monitor
+### POST /api/cron/monitor (V2)
 
-Verifie automatiquement tous les services dont le dernier check depasse l'intervalle configure. Appele toutes les 30s par le MonitorWorker.
+Verifie automatiquement tous les services dont le dernier check depasse l'intervalle configure. Appele par Vercel Cron selon la configuration dans `vercel.json`. Remplace le MonitorWorker client.
 
-- **Auth** : Aucune
+- **Auth** : Header `Authorization: Bearer CRON_SECRET` (securise, appels externes rejetes)
 - **Body** : Aucun
 - **Logique** :
   - Parcourt tous les services
@@ -182,7 +252,14 @@ Verifie automatiquement tous les services dont le dernier check depasse l'interv
 
 ---
 
+### POST /api/monitor (V1 - deprecie)
+
+> **Deprecie en V2** : Remplace par `/api/cron/monitor`. Le MonitorWorker client est supprime au profit du Cron Vercel serverless.
+
+---
+
 ## Notes
 
-> _Ajouter ici les changements d'API, nouveaux endpoints..._
+- **V2** : Toutes les routes services/checks necessitent une session authentifiee (middleware NextAuth.js).
+- **V2** : Le monitoring est desormais gere par Vercel Cron (serverless, fiable 24/7) au lieu du MonitorWorker client.
 

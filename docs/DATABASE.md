@@ -16,6 +16,17 @@
 
 ## Schema
 
+### Table User (V2)
+
+| Champ | Type | Contrainte | Description |
+|-------|------|------------|-------------|
+| id | String | @id @default(cuid()) | Identifiant unique |
+| name | String | - | Nom de l'utilisateur |
+| email | String | @unique | Adresse email (unique) |
+| password | String | - | Mot de passe hashe (bcrypt) |
+| createdAt | DateTime | @default(now()) | Date de creation |
+| updatedAt | DateTime | @updatedAt | Date de derniere modification |
+
 ### Table Service
 
 | Champ | Type | Contrainte | Description |
@@ -26,6 +37,7 @@
 | interval | Int | @default(5) | Intervalle de check en minutes |
 | createdAt | DateTime | @default(now()) | Date de creation |
 | updatedAt | DateTime | @updatedAt | Date de derniere modification |
+| userId | String | @relation(User) | FK vers l'utilisateur proprietaire (V2) |
 
 ### Table Check
 
@@ -41,6 +53,12 @@
 ### Relations
 
 ```
+User 1 ──────> N Service
+  │                │
+  │  id ◄──────── userId
+  │
+  └── onDelete: Cascade (supprimer un utilisateur supprime tous ses services)
+
 Service 1 ──────> N Check
    │                  │
    │  id ◄────────── serviceId
@@ -53,11 +71,23 @@ Service 1 ──────> N Check
 ## Schema Prisma (reference)
 
 ```prisma
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  services  Service[]
+}
+
 model Service {
   id        String   @id @default(cuid())
   name      String
   url       String
   interval  Int      @default(5)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   checks    Check[]
@@ -76,11 +106,12 @@ model Check {
 
 ---
 
-## Evolutions prevues (V2)
+## Evolutions prevues
 
 - [ ] Migration vers Supabase (PostgreSQL)
 - [ ] Table Incident (debut, fin, duree, serviceId)
-- [ ] Table User (authentification)
+- [x] Table User (authentification) — prevu V2 J4
+- [x] Champ userId sur Service (lien User -> Service) — prevu V2 J4
 - [ ] Index sur checkedAt pour optimiser les requetes historiques
 
 ---
