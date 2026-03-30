@@ -36,13 +36,13 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-gray-400 mt-2">Chargement...</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-2">Chargement...</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-24 bg-gray-900 border border-gray-800 rounded-xl animate-pulse"
+              className="h-24 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl animate-pulse"
             />
           ))}
         </div>
@@ -53,15 +53,15 @@ export default function DashboardPage() {
   if (total === 0) {
     return (
       <div>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
         <div className="flex flex-col items-center justify-center mt-20 text-center">
-          <div className="w-16 h-16 bg-gray-800 rounded-2xl flex items-center justify-center mb-4">
+          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-4">
             <span className="text-3xl">📡</span>
           </div>
-          <h2 className="text-xl font-semibold text-gray-300">
+          <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
             Aucun service surveille
           </h2>
-          <p className="text-gray-500 mt-2 max-w-md">
+          <p className="text-gray-400 dark:text-gray-500 mt-2 max-w-md">
             Ajoutez votre premier service pour commencer a surveiller sa
             disponibilite et ses performances.
           </p>
@@ -82,8 +82,8 @@ export default function DashboardPage() {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-gray-400 mt-1">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
             Vue d&apos;ensemble de vos services
           </p>
         </div>
@@ -97,17 +97,17 @@ export default function DashboardPage() {
 
       {/* Compteurs */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-          <p className="text-sm text-gray-400">Total</p>
-          <p className="text-3xl font-bold text-white mt-1">{total}</p>
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5">
+          <p className="text-sm text-gray-500 dark:text-gray-400">Total</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{total}</p>
         </div>
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-          <p className="text-sm text-emerald-400">En ligne</p>
-          <p className="text-3xl font-bold text-emerald-400 mt-1">{upCount}</p>
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5">
+          <p className="text-sm text-emerald-600 dark:text-emerald-400">En ligne</p>
+          <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{upCount}</p>
         </div>
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-          <p className="text-sm text-red-400">Hors ligne</p>
-          <p className="text-3xl font-bold text-red-400 mt-1">{downCount}</p>
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5">
+          <p className="text-sm text-red-600 dark:text-red-400">Hors ligne</p>
+          <p className="text-3xl font-bold text-red-600 dark:text-red-400 mt-1">{downCount}</p>
         </div>
       </div>
 

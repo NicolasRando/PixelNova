@@ -93,21 +93,21 @@ export default function ServiceForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-gray-900 border border-gray-800 rounded-xl p-6"
+      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6"
     >
-      <h2 className="text-lg font-semibold mb-4">
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
         {isEditing ? `Modifier "${editingService.name}"` : "Ajouter un service"}
       </h2>
 
       {error && (
-        <div className="mb-4 px-4 py-3 bg-red-400/10 border border-red-400/20 rounded-lg text-red-400 text-sm">
+        <div className="mb-4 px-4 py-3 bg-red-400/10 border border-red-400/20 rounded-lg text-red-600 dark:text-red-400 text-sm">
           {error}
         </div>
       )}
 
       <div className="space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-400 mb-1">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
             Nom du service
           </label>
           <input
@@ -116,12 +116,12 @@ export default function ServiceForm({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Google"
-            className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+            className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
           />
         </div>
 
         <div>
-          <label htmlFor="url" className="block text-sm font-medium text-gray-400 mb-1">
+          <label htmlFor="url" className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
             URL a surveiller
           </label>
           <input
@@ -130,19 +130,19 @@ export default function ServiceForm({
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://google.com"
-            className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+            className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
           />
         </div>
 
         <div>
-          <label htmlFor="interval" className="block text-sm font-medium text-gray-400 mb-1">
+          <label htmlFor="interval" className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
             Intervalle de verification
           </label>
           <select
             id="interval"
             value={interval}
             onChange={(e) => setInterval(Number(e.target.value))}
-            className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+            className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
           >
             {INTERVALS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -169,7 +169,7 @@ export default function ServiceForm({
           <button
             type="button"
             onClick={onCancel}
-            className="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-medium rounded-lg transition-colors"
+            className="px-5 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors"
           >
             Annuler
           </button>

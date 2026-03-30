@@ -47,8 +47,8 @@ export default function ServicesPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold">Services</h1>
-      <p className="text-gray-400 mt-1">Gerez vos services surveilles</p>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Services</h1>
+      <p className="text-gray-500 dark:text-gray-400 mt-1">Gerez vos services surveilles</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
         {/* Formulaire */}
@@ -62,7 +62,7 @@ export default function ServicesPage() {
 
         {/* Liste des services */}
         <div className="lg:col-span-2">
-          <h2 className="text-lg font-semibold mb-4">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Mes services ({services.length})
           </h2>
 
@@ -71,13 +71,13 @@ export default function ServicesPage() {
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="h-20 bg-gray-900 border border-gray-800 rounded-xl animate-pulse"
+                  className="h-20 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl animate-pulse"
                 />
               ))}
             </div>
           ) : services.length === 0 ? (
-            <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 text-center">
-              <p className="text-gray-500">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-8 text-center">
+              <p className="text-gray-400 dark:text-gray-500">
                 Aucun service pour le moment. Utilisez le formulaire pour en
                 ajouter un.
               </p>
@@ -91,7 +91,7 @@ export default function ServicesPage() {
                 return (
                   <div
                     key={service.id}
-                    className="bg-gray-900 border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-gray-700 transition-all"
+                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-gray-300 dark:hover:border-gray-700 transition-all"
                   >
                     <Link
                       href={`/services/${service.id}`}
@@ -100,17 +100,17 @@ export default function ServicesPage() {
                       <div
                         className={`w-2.5 h-2.5 rounded-full shrink-0 ${
                           !hasCheck
-                            ? "bg-gray-500"
+                            ? "bg-gray-400 dark:bg-gray-500"
                             : isUp
                               ? "bg-emerald-400"
                               : "bg-red-400"
                         }`}
                       />
                       <div className="min-w-0">
-                        <h3 className="font-medium text-white">
+                        <h3 className="font-medium text-gray-900 dark:text-white">
                           {service.name}
                         </h3>
-                        <p className="text-sm text-gray-500 truncate">
+                        <p className="text-sm text-gray-400 dark:text-gray-500 truncate">
                           {service.url}
                         </p>
                       </div>
@@ -121,15 +121,15 @@ export default function ServicesPage() {
                         <span
                           className={
                             !hasCheck
-                              ? "text-gray-500"
+                              ? "text-gray-400 dark:text-gray-500"
                               : isUp
-                                ? "text-emerald-400"
-                                : "text-red-400"
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : "text-red-600 dark:text-red-400"
                           }
                         >
-                          {!hasCheck ? "—" : isUp ? "UP" : "DOWN"}
+                          {!hasCheck ? "\u2014" : isUp ? "UP" : "DOWN"}
                         </span>
-                        <span className="text-gray-500">
+                        <span className="text-gray-400 dark:text-gray-500">
                           {hasCheck && service.lastCheck?.latency != null
                             ? `${service.lastCheck!.latency}ms`
                             : ""}
@@ -139,13 +139,13 @@ export default function ServicesPage() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => setEditingService(service)}
-                          className="px-3 py-1.5 text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors"
+                          className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg transition-colors"
                         >
                           Modifier
                         </button>
                         <button
                           onClick={() => setDeletingService(service)}
-                          className="px-3 py-1.5 text-sm bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
+                          className="px-3 py-1.5 text-sm bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 rounded-lg transition-colors"
                         >
                           Supprimer
                         </button>

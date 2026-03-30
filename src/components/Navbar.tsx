@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Logo from "./Logo";
+import ThemeToggle from "./ThemeToggle";
 import { Service } from "@/types";
 
 export default function Navbar() {
@@ -32,7 +33,6 @@ export default function Navbar() {
     return () => clearInterval(interval);
   }, [session]);
 
-  // Fermer le menu quand on change de page
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
@@ -42,14 +42,28 @@ export default function Navbar() {
     { href: "/services", label: "Services" },
   ];
 
+  const linkClass = (active: boolean) =>
+    `relative px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+      active
+        ? "bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400"
+        : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+    }`;
+
+  const mobileLinkClass = (active: boolean) =>
+    `block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+      active
+        ? "bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400"
+        : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+    }`;
+
   return (
-    <nav className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm sticky top-0 z-50">
+    <nav className="border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-3 group">
             <Logo size={34} />
-            <span className="text-xl font-bold text-white tracking-tight">
-              Pixel<span className="text-indigo-400 group-hover:text-indigo-300 transition-colors">Nova</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
+              Pixel<span className="text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-500 dark:group-hover:text-indigo-300 transition-colors">Nova</span>
             </span>
           </Link>
 
@@ -58,20 +72,9 @@ export default function Navbar() {
             {session ? (
               <>
                 {links.map((link) => {
-                  const isActive = link.href === "/"
-                    ? pathname === "/"
-                    : pathname.startsWith(link.href);
-
+                  const isActive = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
                   return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        isActive
-                          ? "bg-indigo-500/20 text-indigo-400"
-                          : "text-gray-400 hover:text-white hover:bg-gray-800"
-                      }`}
-                    >
+                    <Link key={link.href} href={link.href} className={linkClass(isActive)}>
                       {link.label}
                       {link.href === "/" && downCount > 0 && (
                         <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[11px] font-bold text-white flex items-center justify-center animate-pulse">
@@ -81,64 +84,60 @@ export default function Navbar() {
                     </Link>
                   );
                 })}
-                <span className="text-sm text-gray-400 ml-4">{session.user.name}</span>
+                <ThemeToggle />
+                <span className="text-sm text-gray-500 dark:text-gray-400 ml-3">{session.user.name}</span>
                 <button
                   onClick={() => signOut()}
-                  className="ml-2 px-3 py-1.5 text-sm text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+                  className="ml-2 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                 >
                   Deconnexion
                 </button>
               </>
             ) : (
-              <Link
-                href="/login"
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors"
-              >
-                Connexion
-              </Link>
+              <>
+                <ThemeToggle />
+                <Link
+                  href="/login"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  Connexion
+                </Link>
+              </>
             )}
           </div>
 
-          {/* Mobile burger */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="sm:hidden relative p-2 text-gray-400 hover:text-white"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {menuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          {/* Mobile burger + theme */}
+          <div className="sm:hidden flex items-center gap-1">
+            <ThemeToggle />
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="relative p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {menuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+              {downCount > 0 && (
+                <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center animate-pulse">
+                  {downCount}
+                </span>
               )}
-            </svg>
-            {downCount > 0 && (
-              <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center animate-pulse">
-                {downCount}
-              </span>
-            )}
-          </button>
+            </button>
+          </div>
         </div>
 
         {/* Mobile menu */}
         {menuOpen && (
-          <div className="sm:hidden pb-4 border-t border-gray-800 mt-2 pt-3 space-y-1">
+          <div className="sm:hidden pb-4 border-t border-gray-200 dark:border-gray-800 mt-2 pt-3 space-y-1">
             {session ? (
               <>
                 {links.map((link) => {
-                  const isActive = link.href === "/"
-                    ? pathname === "/"
-                    : pathname.startsWith(link.href);
-
+                  const isActive = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
                   return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                        isActive
-                          ? "bg-indigo-500/20 text-indigo-400"
-                          : "text-gray-400 hover:text-white hover:bg-gray-800"
-                      }`}
-                    >
+                    <Link key={link.href} href={link.href} className={mobileLinkClass(isActive)}>
                       {link.label}
                       {link.href === "/" && downCount > 0 && (
                         <span className="ml-2 inline-flex items-center justify-center w-5 h-5 bg-red-500 rounded-full text-[11px] font-bold text-white">
@@ -148,11 +147,11 @@ export default function Navbar() {
                     </Link>
                   );
                 })}
-                <div className="border-t border-gray-800 mt-2 pt-2">
-                  <span className="block px-4 py-2 text-sm text-gray-400">{session.user.name}</span>
+                <div className="border-t border-gray-200 dark:border-gray-800 mt-2 pt-2">
+                  <span className="block px-4 py-2 text-sm text-gray-500 dark:text-gray-400">{session.user.name}</span>
                   <button
                     onClick={() => signOut()}
-                    className="block w-full text-left px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+                    className="block w-full text-left px-4 py-2.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                   >
                     Deconnexion
                   </button>
@@ -161,7 +160,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="block px-4 py-2.5 text-sm font-medium text-indigo-400 hover:text-indigo-300"
+                className="block px-4 py-2.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300"
               >
                 Connexion
               </Link>
