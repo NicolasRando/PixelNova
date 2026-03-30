@@ -90,7 +90,8 @@ export async function POST(request: NextRequest) {
       { ...service, lastCheck: firstCheck },
       { status: 201 }
     );
-  } catch {
+  } catch (error) {
+    console.error("Erreur creation service:", error);
     return NextResponse.json(
       { error: "Erreur lors de la creation du service" },
       { status: 500 }

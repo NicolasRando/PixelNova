@@ -28,6 +28,26 @@ async function ensureTables() {
   const config = getDbConfig();
   const client = createClient(config);
 
+  // Verifier si la table Service a la colonne userId
+  // Si non, on supprime et recree toutes les tables
+  try {
+    const cols = await client.execute(
+      `PRAGMA table_info("Service")`
+    );
+    const hasUserId = cols.rows.some(
+      (row) => (row as Record<string, unknown>).name === "userId"
+    );
+
+    if (cols.rows.length > 0 && !hasUserId) {
+      // Schema obsolete, on recree tout
+      await client.execute(`DROP TABLE IF EXISTS "Check"`);
+      await client.execute(`DROP TABLE IF EXISTS "Service"`);
+      await client.execute(`DROP TABLE IF EXISTS "User"`);
+    }
+  } catch {
+    // Table n'existe pas encore, on continue
+  }
+
   await client.execute(`CREATE TABLE IF NOT EXISTS "User" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
