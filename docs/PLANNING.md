@@ -83,7 +83,7 @@
 
 | Jour | Objectif | Statut |
 |------|----------|--------|
-| J4 | Auth + Cron Vercel | En attente |
+| J4 | Auth + Cron Vercel | Termine |
 | J5 | Dark mode + Tests + CI/CD | En attente |
 
 ---
@@ -91,17 +91,17 @@
 ## Jour 4 - Auth + Cron Vercel
 
 ### Matin
-- [ ] NextAuth.js setup (provider credentials)
-- [ ] Creer la table User dans le schema Prisma
-- [ ] Pages login et register
-- [ ] Protection des routes API (auth requise)
-- [ ] Middleware auth (redirection si non connecte)
+- [x] NextAuth.js setup (provider credentials, session JWT, bcrypt)
+- [x] Creer la table User dans le schema Prisma + ensureTables
+- [x] Pages login et register (avec auto-login apres inscription)
+- [x] Protection des routes API (auth requise, filtrage par userId)
+- [x] Middleware auth (redirection vers /login si non connecte)
 
 ### Apres-midi
-- [ ] Cron Vercel (configuration vercel.json)
-- [ ] Supprimer le MonitorWorker (remplace par cron serverless)
-- [ ] Endpoint /api/cron/monitor securise avec CRON_SECRET
-- [ ] Tests de fiabilite monitoring 24/7
+- [x] Cron Vercel (vercel.json, 1x/jour plan gratuit)
+- [x] MonitorWorker garde comme complement (60s quand connecte)
+- [x] Endpoint /api/cron/monitor securise avec CRON_SECRET
+- [x] Migration auto schema (detection colonne userId manquante)
 
 ### Livrable J4
 > Authentification complete, monitoring serverless autonome
