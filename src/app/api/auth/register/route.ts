@@ -53,9 +53,11 @@ export async function POST(request: NextRequest) {
       { id: user.id, name: user.name, email: user.email },
       { status: 201 }
     );
-  } catch {
+  } catch (error) {
+    console.error("Erreur inscription:", error);
+    const message = error instanceof Error ? error.message : "Erreur lors de l'inscription";
     return NextResponse.json(
-      { error: "Erreur lors de l'inscription" },
+      { error: message },
       { status: 500 }
     );
   }
