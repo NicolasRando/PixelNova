@@ -15,31 +15,69 @@
   <img src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind">
   <img src="https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma" alt="Prisma">
   <img src="https://img.shields.io/badge/Chart.js-4-FF6384?logo=chart.js&logoColor=white" alt="Chart.js">
+  <img src="https://img.shields.io/badge/Vitest-4-6E9F18?logo=vitest&logoColor=white" alt="Vitest">
+  <img src="https://img.shields.io/badge/Playwright-1.58-45ba4b?logo=playwright&logoColor=white" alt="Playwright">
 </p>
+
+---
+
+## Demo
+
+**Production** : https://pixel-nova-sigma.vercel.app
 
 ---
 
 ## Fonctionnalites
 
-- **Monitoring automatique** — Verification HTTP periodique de vos services (1, 5, 15 ou 30 min)
-- **Dashboard temps reel** — Vue d'ensemble avec compteurs UP/DOWN et cartes de statut
-- **Graphiques de latence** — Courbe de performance avec historique via Chart.js
-- **Gestion CRUD** — Ajouter, modifier et supprimer des services a surveiller
-- **Systeme d'alertes** — Bandeau d'alerte et badge de notification quand un service tombe
-- **Page de detail** — Stats (uptime %, latence moy/min/max), historique des checks
-- **Responsive** — Interface adaptee desktop, tablette et mobile
-- **Retention intelligente** — Conserve les 10 derniers checks UP, garde tous les DOWN
+### V1 — Fondations
+- **Monitoring automatique** — Verification HTTP periodique (1, 5, 15 ou 30 min)
+- **Dashboard temps reel** — Compteurs UP/DOWN et cartes de statut
+- **Graphiques de latence** — Courbe de performance via Chart.js
+- **Gestion CRUD** — Ajouter, modifier, supprimer des services
+- **Systeme d'alertes** — Bandeau d'alerte et badge notification
+- **Page de detail** — Stats uptime, latence moy/min/max, historique
+- **Responsive** — Desktop, tablette et mobile
+- **Retention intelligente** — 10 derniers UP, tous les DOWN conserves
+
+### V2 — Auth, Dark Mode, Tests
+- **Authentification** — NextAuth.js avec credentials, bcrypt, JWT
+- **Protection des routes** — Middleware auth + filtrage par userId
+- **Cron serverless** — Vercel Cron (1x/jour) + MonitorWorker client
+- **Dark mode** — Toggle avec persistance localStorage
+- **Tests unitaires** — 17 tests Vitest (validation, logique metier)
+- **Tests E2E** — 9 tests Playwright (auth, navigation)
+- **CI/CD** — GitHub Actions (3 jobs : lint+build, unit, E2E)
+
+### V3 — En cours de developpement
+- **Auth officielle** — Auth.js v5 avec OAuth Google/GitHub, verification email, reset password
+- **Profil utilisateur** — Avatar, preferences, gestion du compte
+- **Validation Zod** — Validation typee de toutes les entrees API
+- **Securite** — Rate limiting, API keys, audit log, CSRF
+- **Monitoring avance** — SSL, TCP/UDP, DNS, keyword, uptime %
+- **Notifications** — Email (Resend), Discord, Slack, Telegram, webhooks
+- **Incidents** — Creation auto, timeline, post-mortem, maintenance planifiee
+- **Status page publique** — Page partageable avec heatmap et SLA
+- **Dashboard enrichi** — SSE temps reel, filtres, export CSV/PDF
+- **Teams** — Organisations, roles (owner/admin/editor/viewer), invitations
+- **Integrations** — API publique Swagger, bots Slack/Discord, Zapier
+- **Analytics** — Rapports auto, predictions, metriques MTTR/MTTA
+- **UX/UI** — Framer Motion, drag & drop, raccourcis clavier, PWA, i18n FR/EN
+- **Infra** — Docker, Redis, Prometheus, feature flags, CI/CD avance
 
 ## Stack technique
 
 | Couche | Technologie |
 |--------|-------------|
 | Framework | Next.js 16 (App Router) |
-| Langage | TypeScript (strict) |
+| Langage | TypeScript 6 (strict) |
 | ORM | Prisma 7 + libSQL adapter |
-| Base de donnees | SQLite |
+| BDD | SQLite (dev) / Turso (prod) |
 | CSS | Tailwind CSS 4 |
 | Graphiques | Chart.js + react-chartjs-2 |
+| Auth | NextAuth.js v4 (V2) -> Auth.js v5 (V3) |
+| Tests | Vitest + Playwright |
+| CI/CD | GitHub Actions |
+| Deploy | Vercel |
 
 ## Installation
 
@@ -60,61 +98,43 @@ npm run dev
 
 Ouvrir [http://localhost:3000](http://localhost:3000) dans le navigateur.
 
+## Scripts
+
+| Commande | Description |
+|----------|-------------|
+| `npm run dev` | Serveur de developpement |
+| `npm run build` | Build de production |
+| `npm run start` | Serveur de production |
+| `npm run lint` | Linter ESLint |
+| `npm test` | Tests unitaires (Vitest) |
+| `npm run test:watch` | Tests en mode watch |
+| `npm run test:e2e` | Tests E2E (Playwright) |
+
 ## Structure du projet
 
 ```
 src/
 ├── app/
 │   ├── page.tsx                    # Dashboard
+│   ├── not-found.tsx               # Page 404
+│   ├── login/page.tsx              # Connexion
+│   ├── register/page.tsx           # Inscription
 │   ├── services/
 │   │   ├── page.tsx                # Gestion des services
 │   │   └── [id]/page.tsx           # Detail d'un service
 │   └── api/
-│       ├── monitor/route.ts        # Monitoring automatique
-│       └── services/
-│           ├── route.ts            # GET all, POST
-│           └── [id]/
-│               ├── route.ts        # GET, PUT, DELETE
-│               ├── checks/route.ts # Historique des checks
-│               └── check/route.ts  # Check manuel
-├── components/
-│   ├── Navbar.tsx                  # Navigation + badge alertes
-│   ├── StatusCard.tsx              # Carte de statut d'un service
-│   ├── LatencyChart.tsx            # Graphique de latence
-│   ├── ServiceForm.tsx             # Formulaire ajout/edition
-│   ├── DeleteModal.tsx             # Modal de confirmation
-│   ├── AlertBanner.tsx             # Bandeau d'alerte DOWN
-│   ├── MonitorWorker.tsx           # Worker de monitoring auto
-│   └── Logo.tsx                    # Logo SVG custom
-├── lib/
-│   ├── db.ts                       # Instance Prisma + SQLite
-│   └── monitor.ts                  # Logique de check HTTP
-└── types/
-    └── index.ts                    # Types partages
+│       ├── auth/                   # Auth (register, NextAuth)
+│       ├── cron/monitor/route.ts   # Cron Vercel
+│       ├── monitor/route.ts        # Monitoring client
+│       └── services/               # CRUD services + checks
+├── components/                     # Composants React
+├── lib/                            # Logique metier (db, auth, monitor)
+├── middleware.ts                    # Auth middleware
+└── types/                          # Types TypeScript
+tests/
+├── unit/                           # Tests Vitest (17 tests)
+└── e2e/                            # Tests Playwright (9 tests)
 ```
-
-## API Endpoints
-
-| Methode | Route | Description |
-|---------|-------|-------------|
-| GET | /api/services | Liste tous les services |
-| POST | /api/services | Cree un service |
-| GET | /api/services/:id | Detail d'un service |
-| PUT | /api/services/:id | Modifie un service |
-| DELETE | /api/services/:id | Supprime un service |
-| GET | /api/services/:id/checks | Historique des checks |
-| POST | /api/services/:id/check | Check manuel |
-| POST | /api/monitor | Verifie les services expires |
-
-## Roadmap V2
-
-- [ ] Migration vers Drizzle ORM + Supabase (PostgreSQL)
-- [ ] Authentification utilisateur
-- [ ] Notifications email/SMS
-- [ ] Monitoring TCP/UDP
-- [ ] Export CSV des donnees
-- [ ] Dark/Light mode
-- [ ] Tests unitaires et d'integration
 
 ## Auteur
 
@@ -122,4 +142,4 @@ src/
 
 ---
 
-Realise en 3 jours comme projet portfolio fullstack.
+Realise comme projet portfolio fullstack — V1 (3 jours), V2 (2 jours), V3 (13 jours en cours).

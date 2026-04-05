@@ -85,7 +85,12 @@ export default function Navbar() {
                   );
                 })}
                 <ThemeToggle />
-                <span className="text-sm text-gray-500 dark:text-gray-400 ml-3">{session.user.name}</span>
+                <Link
+                  href="/profile"
+                  className="ml-3 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                >
+                  {session.user.name}
+                </Link>
                 <button
                   onClick={() => signOut()}
                   className="ml-2 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
@@ -148,7 +153,9 @@ export default function Navbar() {
                   );
                 })}
                 <div className="border-t border-gray-200 dark:border-gray-800 mt-2 pt-2">
-                  <span className="block px-4 py-2 text-sm text-gray-500 dark:text-gray-400">{session.user.name}</span>
+                  <Link href="/profile" className="block px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+                    {session.user.name} — Mon profil
+                  </Link>
                   <button
                     onClick={() => signOut()}
                     className="block w-full text-left px-4 py-2.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"

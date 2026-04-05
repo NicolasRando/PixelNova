@@ -28,18 +28,20 @@ async function ensureTables() {
   const config = getDbConfig();
   const client = createClient(config);
 
-  // Verifier si la table Service a la colonne userId
+  // Verifier si la table User a la colonne emailVerified (V3)
   // Si non, on supprime et recree toutes les tables
   try {
     const cols = await client.execute(
-      `PRAGMA table_info("Service")`
+      `PRAGMA table_info("User")`
     );
-    const hasUserId = cols.rows.some(
-      (row) => (row as Record<string, unknown>).name === "userId"
+    const hasEmailVerified = cols.rows.some(
+      (row) => (row as Record<string, unknown>).name === "emailVerified"
     );
 
-    if (cols.rows.length > 0 && !hasUserId) {
-      // Schema obsolete, on recree tout
+    if (cols.rows.length > 0 && !hasEmailVerified) {
+      // Schema V2 detecte, migration vers V3
+      await client.execute(`DROP TABLE IF EXISTS "Account"`);
+      await client.execute(`DROP TABLE IF EXISTS "VerificationToken"`);
       await client.execute(`DROP TABLE IF EXISTS "Check"`);
       await client.execute(`DROP TABLE IF EXISTS "Service"`);
       await client.execute(`DROP TABLE IF EXISTS "User"`);
@@ -48,15 +50,48 @@ async function ensureTables() {
     // Table n'existe pas encore, on continue
   }
 
+  // Table User (V3 : emailVerified, image, password nullable)
   await client.execute(`CREATE TABLE IF NOT EXISTS "User" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL UNIQUE,
-    "password" TEXT NOT NULL,
+    "emailVerified" DATETIME,
+    "image" TEXT,
+    "password" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
   )`);
 
+  // Table Account (Auth.js v5 - OAuth)
+  await client.execute(`CREATE TABLE IF NOT EXISTS "Account" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "provider" TEXT NOT NULL,
+    "providerAccountId" TEXT NOT NULL,
+    "refresh_token" TEXT,
+    "access_token" TEXT,
+    "expires_at" INTEGER,
+    "token_type" TEXT,
+    "scope" TEXT,
+    "id_token" TEXT,
+    "session_state" TEXT,
+    CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+  )`);
+
+  // Index unique sur Account (provider, providerAccountId)
+  await client.execute(`CREATE UNIQUE INDEX IF NOT EXISTS "Account_provider_providerAccountId_key" ON "Account" ("provider", "providerAccountId")`);
+
+  // Table VerificationToken (Auth.js v5)
+  await client.execute(`CREATE TABLE IF NOT EXISTS "VerificationToken" (
+    "identifier" TEXT NOT NULL,
+    "token" TEXT NOT NULL UNIQUE,
+    "expires" DATETIME NOT NULL
+  )`);
+
+  await client.execute(`CREATE UNIQUE INDEX IF NOT EXISTS "VerificationToken_identifier_token_key" ON "VerificationToken" ("identifier", "token")`);
+
+  // Table Service
   await client.execute(`CREATE TABLE IF NOT EXISTS "Service" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
@@ -68,6 +103,7 @@ async function ensureTables() {
     CONSTRAINT "Service_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
   )`);
 
+  // Table Check
   await client.execute(`CREATE TABLE IF NOT EXISTS "Check" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "serviceId" TEXT NOT NULL,

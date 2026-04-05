@@ -1,19 +1,19 @@
-import { getToken } from "next-auth/jwt";
-import { NextRequest, NextResponse } from "next/server";
+import NextAuth from "next-auth";
+import { authConfig } from "@/lib/auth.config";
+import { NextResponse } from "next/server";
 
-export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request });
+const { auth } = NextAuth(authConfig);
 
-  // Si pas de token, rediriger vers login
-  if (!token) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
+export default auth((req) => {
+  if (!req.auth) {
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
-  matcher: ["/", "/services", "/services/:path*"],
+  matcher: ["/", "/services", "/services/:path*", "/profile"],
 };

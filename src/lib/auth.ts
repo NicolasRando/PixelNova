@@ -1,11 +1,19 @@
-import { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
+import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "./db";
+import { authConfig } from "./auth.config";
 
-export const authOptions: NextAuthOptions = {
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
+  adapter: PrismaAdapter(prisma),
+  session: {
+    strategy: "jwt",
+  },
   providers: [
-    CredentialsProvider({
+    ...authConfig.providers,
+    Credentials({
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
@@ -16,46 +24,25 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        const email = (credentials.email as string).toLowerCase().trim();
+        const password = credentials.password as string;
+
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email.toLowerCase().trim() },
+          where: { email },
         });
 
-        if (!user) return null;
+        if (!user || !user.password) return null;
 
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
-
+        const isValid = await bcrypt.compare(password, user.password);
         if (!isValid) return null;
 
         return {
           id: user.id,
           name: user.name,
           email: user.email,
+          image: user.image,
         };
       },
     }),
   ],
-  session: {
-    strategy: "jwt",
-  },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-      }
-      return session;
-    },
-  },
-  pages: {
-    signIn: "/login",
-  },
-  secret: process.env.NEXTAUTH_SECRET || "pixelnova-secret-dev-only",
-};
+});
